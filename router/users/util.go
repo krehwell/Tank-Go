@@ -1,6 +1,9 @@
 package users
 
 import (
+	"final-project/database"
+	"final-project/model"
+
 	"github.com/k0kubun/pp"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -23,4 +26,13 @@ func comparePasswords(hashedPwd string, plainPwd []byte) bool {
 	}
 
 	return true
+}
+
+func getUserByUsername(email string) (model.User, bool) {
+	u := model.User{Email: email}
+	if err := database.Instance.Db.First(&u, "email = ?", email).Error; err != nil {
+		return u, false
+	}
+
+	return u, true
 }

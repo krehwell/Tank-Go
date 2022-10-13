@@ -28,7 +28,6 @@ func registerUser(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, util.ErrMsg{ErrorMessage: validateErr.Error()})
 		return
 	}
-
 	hashedPassword := hashAndSalt([]byte(newUser.Password))
 	newUser.Password = hashedPassword
 
@@ -54,5 +53,11 @@ func loginUser(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, authData)
+	user, isFound := getUserByUsername(authData.Email)
+	if !isFound {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, util.ErrMsg{ErrorMessage: "User not found!"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, user)
 }
