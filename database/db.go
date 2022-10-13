@@ -13,6 +13,9 @@ type Database struct {
 	Db *gorm.DB
 }
 
+// singleton
+var Instance *Database
+
 const (
 	host = "localhost"
 	user = "postgres"
@@ -22,7 +25,7 @@ const (
 	sslmode = "disable"
 )
 
-func InitializeDb() Database {
+func InitializeDb() {
 	conStr := fmt.Sprintf("host=%s user=%s dbname=%s port=%d sslmode=%s", host, user, dbname, port, sslmode)
 
 	gormDb, gormErr := gorm.Open(postgres.Open(conStr), &gorm.Config{})
@@ -37,5 +40,5 @@ func InitializeDb() Database {
 	}
 
 	fmt.Println("Db initialzed!")
-	return Database{gormDb}
+	Instance = &Database{gormDb}
 }
