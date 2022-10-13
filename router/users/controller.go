@@ -35,5 +35,5 @@ func registerUser(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, newUser)
+	ctx.JSON(http.StatusCreated, newUser)
 }
