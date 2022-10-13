@@ -29,6 +29,9 @@ func registerUser(ctx *gin.Context) {
 		return
 	}
 
+	hashedPassword := hashAndSalt([]byte(newUser.Password))
+	newUser.Password = hashedPassword
+
 	createUserErr := database.Instance.Db.Create(&newUser).Error
 	if createUserErr != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, util.ErrMsg{ErrorMessage: createUserErr.Error()})
