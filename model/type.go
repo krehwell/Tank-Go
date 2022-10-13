@@ -16,7 +16,7 @@ type Photo struct {
 	Id       string `gorm:"primaryKey" valid:"uuid"`
 	Title    string `gorm:"not null" valid:"-"`
 	Caption  string `valid:"-"`
-	PhotoUrl string `gorm:"not null" valid:"-"`
+	PhotoUrl string `gorm:"not null" valid:"url"`
 }
 
 type Comment struct {
