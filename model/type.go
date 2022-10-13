@@ -6,8 +6,8 @@ type User struct {
 	gorm.Model
 	Id       string `gorm:"primaryKey"`
 	Username string `gorm:"unique;not null"`
-	Email    string `gorm:"unique;not null"`
-	Password string `gorm:"unique;not null"`
+	Email    string `gorm:"unique;not null" valid:"email"`
+	Password string `gorm:"unique;not null" valid:"min:6"`
 	Age      int    `gorm:"unique;not null"`
 }
 
