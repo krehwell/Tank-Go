@@ -1,19 +1,17 @@
 package router
 
 import (
-	"net/http"
+	"final-project/router/users"
 
 	"github.com/gin-gonic/gin"
 )
 
 func InitializeRouter() {
-    r := gin.Default()
+	r := gin.Default()
 
-    v1 := r.Group("/v1")
+	v1 := r.Group("/v1")
 
-    v1.GET("/home", func(ctx *gin.Context) {
-        ctx.JSON(http.StatusOK, "yakuza is cool")
-    })
+	users.InitializeUserRoutes(v1)
 
-    r.Run(":8080")
+	r.Run(":8080")
 }

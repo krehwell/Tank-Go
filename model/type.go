@@ -7,7 +7,7 @@ type User struct {
 	Id       string `gorm:"primaryKey"`
 	Username string `gorm:"unique;not null"`
 	Email    string `gorm:"unique;not null" valid:"email"`
-	Password string `gorm:"unique;not null" valid:"min:6"`
+	Password string `gorm:"unique;not null" valid:"stringlength(6|200)"`
 	Age      int    `gorm:"unique;not null"`
 }
 
@@ -23,12 +23,12 @@ type Comment struct {
 	gorm.Model
 	UserId  string
 	PhotoId string
-    Message string `gorm:"not null"`
+	Message string `gorm:"not null"`
 }
 
 type SocialMedia struct {
-    Id             string `gorm:"primaryKey"`
+	Id             string `gorm:"primaryKey"`
 	Name           string `gorm:"type:varchar(255);not null"`
-    SocialMediaUrl string `gorm:"not null"`
+	SocialMediaUrl string `gorm:"not null"`
 	UserId         string
 }
