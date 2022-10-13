@@ -53,11 +53,20 @@ func loginUser(ctx *gin.Context) {
 		return
 	}
 
+	// is user exist
 	user, isFound := getUserByUsername(authData.Email)
 	if !isFound {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, util.ErrMsg{ErrorMessage: "User not found!"})
 		return
 	}
 
+	// is password user correct
+	isAllowToLogin := comparePasswords(user.Password, []byte(authData.Password))
+	if !isAllowToLogin {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, util.ErrMsg{ErrorMessage: "User credential is invalid"})
+		return
+	}
+
+	// TODO: should return a token instead
 	ctx.JSON(http.StatusOK, user)
 }
