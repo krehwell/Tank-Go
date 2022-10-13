@@ -7,7 +7,7 @@ type User struct {
 	Id       string `gorm:"primaryKey" valid:"uuid"`
 	Username string `gorm:"unique;not null" valid:"stringlength(3|20)"`
 	Email    string `gorm:"unique;not null" valid:"email"`
-	Password string `gorm:"unique;not null" valid:"stringlength(6|200)"`
+	Password string `gorm:"not null" valid:"stringlength(6|200)"`
 	Age      int    `gorm:"unique;not null" valid:"range(8|200)"`
 }
 

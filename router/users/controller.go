@@ -31,9 +31,25 @@ func registerUser(ctx *gin.Context) {
 
 	createUserErr := database.Instance.Db.Create(&newUser).Error
 	if createUserErr != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, util.ErrMsg{ErrorMessage: validateErr.Error()})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, util.ErrMsg{ErrorMessage: createUserErr.Error()})
 		return
 	}
 
 	ctx.JSON(http.StatusCreated, newUser)
+}
+
+func loginUser(ctx *gin.Context) {
+	authData := struct {
+		Email    string
+		Password string
+	}{}
+
+	bindErr := ctx.ShouldBindJSON(&authData)
+
+	if bindErr != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, util.ErrMsg{ErrorMessage: bindErr.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, authData)
 }

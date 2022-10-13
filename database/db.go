@@ -14,7 +14,7 @@ type Database struct {
 }
 
 // singleton
-var Instance *Database
+var Instance Database
 
 const (
 	host = "localhost"
@@ -40,5 +40,5 @@ func InitializeDb() {
 	}
 
 	fmt.Println("Db initialzed!")
-	Instance = &Database{gormDb}
+	Instance = Database{gormDb}
 }
