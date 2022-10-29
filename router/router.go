@@ -9,6 +9,7 @@ import (
 
 func InitializeRouter(db database.Database) *gin.Engine {
 	r := gin.Default()
+	r.SetTrustedProxies(nil)
 
 	v1 := r.Group("/v1")
 

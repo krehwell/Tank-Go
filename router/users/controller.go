@@ -7,8 +7,8 @@ import (
 )
 
 func Controller(r *gin.RouterGroup, db database.Database) {
-	userRepo := UserService{repository: UserRepository{db}}
+	userService := UserService{repository: UserRepository{db}}
 
-	r.POST("/users/register", userRepo.registerUser)
-	// r.GET("/users/login", loginUser)
+	r.POST("/users/register", userService.registerUser)
+	r.GET("/users/login", userService.loginUser)
 }

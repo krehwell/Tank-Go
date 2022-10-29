@@ -2,6 +2,7 @@ package users
 
 import (
 	"final-project/model"
+	"final-project/utils"
 	"net/http"
 
 	"github.com/asaskevich/govalidator"
@@ -43,4 +44,35 @@ func (u *UserService) registerUser(ctx *gin.Context) {
 }
 
 func (u *UserService) loginUser(ctx *gin.Context) {
+	authData := struct {
+		Email    string
+		Password string
+	}{}
+
+	if bindErr := ctx.ShouldBindJSON(&authData); bindErr != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": false, "message": bindErr.Error()})
+		return
+	}
+
+	user, isFound := u.repository.getUserByUsername(authData.Email)
+	if !isFound {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": false, "message": "User not found"})
+		return
+	}
+
+	isAllowToLogin := comparePasswords(user.Password, []byte(authData.Password))
+	if !isAllowToLogin {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": false, "message": "User credential Invalid"})
+		return
+	}
+
+	jwtToken, jwtErr := utils.GenerateJWT(user.Email, user.Username)
+	if jwtErr != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": false, "message": jwtErr.Error})
+	}
+
+	ctx.JSON(http.StatusOK, struct {
+		User  model.User
+		Token string
+	}{user, jwtToken})
 }
