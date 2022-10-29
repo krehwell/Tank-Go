@@ -3,7 +3,10 @@ package users
 import (
 	"final-project/database"
 	"final-project/model"
+	"final-project/util"
+	"time"
 
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/k0kubun/pp"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -35,4 +38,20 @@ func getUserByUsername(email string) (model.User, bool) {
 	}
 
 	return u, true
+}
+
+func generateJWT(username, email string) (string, error) {
+	atClaims := jwt.MapClaims{}
+	atClaims["authorized"] = true
+	atClaims["username"] = username
+	atClaims["email"] = email
+	atClaims["exp"] = time.Now().Add(time.Minute * 15).Unix()
+
+	at := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
+
+	token, err := at.SignedString([]byte(util.JWT_KEY))
+	if err != nil {
+		return "", err
+	}
+	return token, nil
 }

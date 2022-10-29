@@ -4,6 +4,7 @@ import (
 	"final-project/database"
 	"final-project/model"
 	"final-project/util"
+	"fmt"
 	"net/http"
 
 	"github.com/asaskevich/govalidator"
@@ -67,6 +68,11 @@ func loginUser(ctx *gin.Context) {
 		return
 	}
 
-	// TODO: should return a token instead
-	ctx.JSON(http.StatusOK, user)
+	loginToken, tokenErr := generateJWT(user.Username, user.Email)
+	if tokenErr != nil {
+		fmt.Println("token error", tokenErr)
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, util.ErrMsg{ErrorMessage: "Error in generating token for user"})
+	}
+
+	ctx.JSON(http.StatusOK, loginToken)
 }
