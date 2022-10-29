@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func extractToken(c *gin.Context) string {
+func extractTokenFromHeader(c *gin.Context) string {
 	headerStr := c.Request.Header.Get("Authorization")
 	bearerTokenStr := strings.Split(headerStr, " ")
 
@@ -25,13 +25,21 @@ func extractToken(c *gin.Context) string {
 
 func IsAuthorized() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		headerToken := extractToken(ctx)
+		headerToken := extractTokenFromHeader(ctx)
+
 		isTokenValid := utils.IsTokenValid(headerToken)
 
 		if !isTokenValid {
 			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": false, "message": "Unauthorized"})
 			return
 		}
+
+		jwtUserData, jwtUserDataErr := utils.ExtractTokenUserIdentity(headerToken)
+		if jwtUserDataErr != nil {
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": false, "message": jwtUserDataErr.Error()})
+		}
+
+		ctx.Set(utils.JWT_USER_DATA_KEY, jwtUserData)
 		ctx.Next()
 	}
 }

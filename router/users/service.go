@@ -78,7 +78,32 @@ func (u *UserService) loginUser(ctx *gin.Context) {
 }
 
 func (u *UserService) updateUser(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "You hit a put end point",
-	})
+	jwtUserNoAssertion, _ := ctx.Get(utils.JWT_USER_DATA_KEY)
+	jwtUser := jwtUserNoAssertion.(model.JWTUser)
+
+	user := model.User{}
+	bindErr := ctx.ShouldBindJSON(&user)
+	if bindErr != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": false, "message": "Failed to bind with JSON, check the body"})
+		return
+	}
+
+	oldUserData, isFound := u.repository.getUserById(user.Id)
+	if !isFound {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": false, "message": "User with given Id not found"})
+		return
+	}
+
+	if oldUserData.Email != jwtUser.Email || oldUserData.Username != jwtUser.Username{
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": false, "message": "Not authorized to update the user"})
+		return
+	}
+
+	updatedUserData, updateUserErr := u.repository.updateUserData(oldUserData, user)
+	if updateUserErr != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": false, "message": updateUserErr.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, updatedUserData)
 }

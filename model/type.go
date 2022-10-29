@@ -2,6 +2,11 @@ package model
 
 import "gorm.io/gorm"
 
+type JWTUser struct {
+	Username string
+	Email string
+}
+
 type User struct {
 	gorm.Model `valid:"-"`
 	Id       string `gorm:"primaryKey" valid:"uuid"`
