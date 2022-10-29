@@ -94,7 +94,7 @@ func (u *UserService) updateUser(ctx *gin.Context) {
 		return
 	}
 
-	if oldUserData.Email != jwtUser.Email || oldUserData.Username != jwtUser.Username{
+	if oldUserData.Email != jwtUser.Email || oldUserData.Username != jwtUser.Username {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": false, "message": "Not authorized to update the user"})
 		return
 	}
@@ -105,5 +105,13 @@ func (u *UserService) updateUser(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, updatedUserData)
+	jwtToken, jwtErr := utils.GenerateJWT(user.Email, user.Username)
+	if jwtErr != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": false, "message": jwtErr.Error})
+	}
+
+	ctx.JSON(http.StatusOK, struct {
+		User  model.User
+		Token string
+	}{updatedUserData, jwtToken})
 }

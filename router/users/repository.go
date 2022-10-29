@@ -3,6 +3,8 @@ package users
 import (
 	"final-project/database"
 	"final-project/model"
+
+	"gorm.io/gorm/clause"
 )
 
 type UserRepository struct {
@@ -38,7 +40,11 @@ func (ur *UserRepository) createNewUser(newUser model.User) (model.User, error) 
 
 func (ur *UserRepository) updateUserData(oldUserData, newUserData model.User) (model.User, error) {
 	userBuffer := model.User{}
-	updateUserErr := ur.database.DB.Model(&userBuffer).Where("Id = ?", oldUserData.Id).Updates(&newUserData).Error
+	updateUserErr := ur.database.DB.Model(&userBuffer).
+		Clauses(clause.Returning{}).
+		Where("Id = ?", oldUserData.Id).
+		Updates(&newUserData).Error
+
 	if updateUserErr != nil {
 		return model.User{}, updateUserErr
 	}
