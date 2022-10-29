@@ -2,23 +2,18 @@ package users
 
 import (
 	"final-project/database"
-	"fmt"
-	"net/http"
-
-	"github.com/gin-gonic/gin"
+	"final-project/model"
 )
 
 type UserRepository struct {
 	database database.Database
 }
 
-func (u *UserRepository) registerUser(c *gin.Context) {
-	fmt.Println("someone hit me")
-	c.JSON(http.StatusOK, gin.H{
-		"message": "you are good",
-	})
-}
+func (ur *UserRepository) createNewUser(newUser model.User) (model.User, error) {
+	createUserErr := ur.database.DB.Create(&newUser).Error
+	if createUserErr != nil {
+		return model.User{}, createUserErr
+	}
 
-func (u *UserRepository) loginUser(c *gin.Context) {
-
+	return newUser, nil
 }
