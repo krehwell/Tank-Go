@@ -6,9 +6,7 @@ import (
 	"final-project/utils"
 	"net/http"
 
-	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 type UserService struct {
@@ -20,24 +18,13 @@ func (u *UserService) registerUser(ctx *gin.Context) {
 	bindErr := ctx.ShouldBindJSON(&newUser)
 
 	if bindErr != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": false, "message": bindErr.Error()})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": bindErr.Error()})
 		return
 	}
-
-	id := uuid.NewString()
-	newUser.Id = id
-
-	_, validateErr := govalidator.ValidateStruct(newUser)
-	if validateErr != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": false, "message": validateErr.Error()})
-		return
-	}
-	hashedPassword := hashAndSalt([]byte(newUser.Password))
-	newUser.Password = hashedPassword
 
 	createUser, createUserErr := u.repository.createNewUser(newUser)
 	if createUserErr != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": false, "message": createUserErr.Error()})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": createUserErr.Error()})
 		return
 	}
 
@@ -51,14 +38,14 @@ func (u *UserService) loginUser(ctx *gin.Context) {
 	}{}
 
 	if bindErr := ctx.ShouldBindJSON(&authData); bindErr != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": false, "message": bindErr.Error()})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": bindErr.Error()})
 		return
 	}
 
 	user, jwtToken, err := processUserAndGenerateToken(func() (model.User, error) {
 		foundUser, isFound := u.repository.getUserByUsername(authData.Email)
 
-		isAllowToLogin := comparePasswords(foundUser.Password, []byte(authData.Password))
+		isAllowToLogin := utils.ComparePasswords(foundUser.Password, []byte(authData.Password))
 		if !isAllowToLogin {
 			return model.User{}, errors.New("User credential is invalid")
 		}
@@ -71,7 +58,7 @@ func (u *UserService) loginUser(ctx *gin.Context) {
 	})
 
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": false, "message": err.Error()})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
@@ -83,23 +70,23 @@ func (u *UserService) loginUser(ctx *gin.Context) {
 
 func (u *UserService) updateUser(ctx *gin.Context) {
 	jwtUserNoAssertion, _ := ctx.Get(utils.JWT_USER_DATA_KEY)
-	jwtUser := jwtUserNoAssertion.(model.JWTUser)
+	jwtUser := jwtUserNoAssertion.(utils.JWTUser)
 
 	user := model.User{}
 	bindErr := ctx.ShouldBindJSON(&user)
 	if bindErr != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": false, "message": "Failed to bind with JSON, check the body"})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Failed to bind with JSON, check the body"})
 		return
 	}
 
 	oldUserData, isFound := u.repository.getUserById(user.Id)
 	if !isFound {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": false, "message": "User with given Id not found"})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "User with given Id not found"})
 		return
 	}
 
 	if oldUserData.Email != jwtUser.Email || oldUserData.Username != jwtUser.Username {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": false, "message": "Not authorized to update the user"})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Not authorized to update the user"})
 		return
 	}
 
@@ -108,7 +95,7 @@ func (u *UserService) updateUser(ctx *gin.Context) {
 	})
 
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": false, "message": err.Error()})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 

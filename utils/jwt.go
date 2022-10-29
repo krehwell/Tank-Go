@@ -2,7 +2,6 @@ package utils
 
 import (
 	"errors"
-	"final-project/model"
 	"fmt"
 	"time"
 
@@ -10,9 +9,14 @@ import (
 )
 
 const (
-	JWT_SECRET_KEY = "MY_JWT_SECRET_KEY"
+	JWT_SECRET_KEY    = "MY_JWT_SECRET_KEY"
 	JWT_USER_DATA_KEY = "JWT_USER"
 )
+
+type JWTUser struct {
+	Username string
+	Email    string
+}
 
 func parseToken(token *jwt.Token) (any, error) {
 	if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -21,10 +25,10 @@ func parseToken(token *jwt.Token) (any, error) {
 	return []byte(JWT_SECRET_KEY), nil
 }
 
-func ExtractTokenUserIdentity(tokenString string) (model.JWTUser, error) {
+func ExtractTokenUserIdentity(tokenString string) (JWTUser, error) {
 	token, parseErr := jwt.Parse(tokenString, parseToken)
 	if parseErr != nil {
-		return model.JWTUser{}, parseErr
+		return JWTUser{}, parseErr
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
@@ -33,10 +37,10 @@ func ExtractTokenUserIdentity(tokenString string) (model.JWTUser, error) {
 		username := claims["username"].(string)
 		email := claims["email"].(string)
 
-		return model.JWTUser{Username: username, Email: email}, nil
+		return JWTUser{Username: username, Email: email}, nil
 	}
 
-	return model.JWTUser{}, errors.New("Token is invalid")
+	return JWTUser{}, errors.New("Token is invalid")
 }
 
 func GenerateJWT(email, username string) (string, error) {

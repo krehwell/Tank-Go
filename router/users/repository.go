@@ -39,8 +39,7 @@ func (ur *UserRepository) createNewUser(newUser model.User) (model.User, error) 
 }
 
 func (ur *UserRepository) updateUserData(oldUserData, newUserData model.User) (model.User, error) {
-	userBuffer := model.User{}
-	updateUserErr := ur.database.DB.Model(&userBuffer).
+	updateUserErr := ur.database.DB.Model(&oldUserData).
 		Clauses(clause.Returning{}).
 		Where("Id = ?", oldUserData.Id).
 		Updates(&newUserData).Error
@@ -49,5 +48,5 @@ func (ur *UserRepository) updateUserData(oldUserData, newUserData model.User) (m
 		return model.User{}, updateUserErr
 	}
 
-	return userBuffer, nil
+	return oldUserData, nil
 }
