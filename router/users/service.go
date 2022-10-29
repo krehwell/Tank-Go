@@ -1,6 +1,7 @@
 package users
 
 import (
+	"errors"
 	"final-project/model"
 	"final-project/utils"
 	"net/http"
@@ -54,21 +55,24 @@ func (u *UserService) loginUser(ctx *gin.Context) {
 		return
 	}
 
-	user, isFound := u.repository.getUserByUsername(authData.Email)
-	if !isFound {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": false, "message": "User not found"})
-		return
-	}
+	user, jwtToken, err := processUserAndGenerateToken(func() (model.User, error) {
+		foundUser, isFound := u.repository.getUserByUsername(authData.Email)
 
-	isAllowToLogin := comparePasswords(user.Password, []byte(authData.Password))
-	if !isAllowToLogin {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": false, "message": "User credential Invalid"})
-		return
-	}
+		isAllowToLogin := comparePasswords(foundUser.Password, []byte(authData.Password))
+		if !isAllowToLogin {
+			return model.User{}, errors.New("User credential is invalid")
+		}
 
-	jwtToken, jwtErr := utils.GenerateJWT(user.Email, user.Username)
-	if jwtErr != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": false, "message": jwtErr.Error})
+		if !isFound {
+			return foundUser, errors.New("User with given Id not found")
+		}
+
+		return foundUser, nil
+	})
+
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": false, "message": err.Error()})
+		return
 	}
 
 	ctx.JSON(http.StatusOK, struct {
@@ -99,15 +103,13 @@ func (u *UserService) updateUser(ctx *gin.Context) {
 		return
 	}
 
-	updatedUserData, updateUserErr := u.repository.updateUserData(oldUserData, user)
-	if updateUserErr != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": false, "message": updateUserErr.Error()})
-		return
-	}
+	updatedUserData, jwtToken, err := processUserAndGenerateToken(func() (model.User, error) {
+		return u.repository.updateUserData(oldUserData, user)
+	})
 
-	jwtToken, jwtErr := utils.GenerateJWT(user.Email, user.Username)
-	if jwtErr != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": false, "message": jwtErr.Error})
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": false, "message": err.Error()})
+		return
 	}
 
 	ctx.JSON(http.StatusOK, struct {
