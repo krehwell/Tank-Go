@@ -8,7 +8,7 @@ type User struct {
 	Username string `gorm:"unique;not null" valid:"stringlength(3|20)"`
 	Email    string `gorm:"unique;not null" valid:"email"`
 	Password string `gorm:"not null" valid:"stringlength(6|200)"`
-	Age      int    `gorm:"unique;not null" valid:"range(8|200)"`
+	Age      int    `gorm:"not null" valid:"range(8|200)"`
 }
 
 type Photo struct {
