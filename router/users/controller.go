@@ -2,6 +2,7 @@ package users
 
 import (
 	"final-project/database"
+	"final-project/router/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -9,6 +10,7 @@ import (
 func Controller(r *gin.RouterGroup, db database.Database) {
 	userService := UserService{repository: UserRepository{db}}
 
-	r.POST("/users/register", userService.registerUser)
-	r.GET("/users/login", userService.loginUser)
+	r.POST("/users/registerUser", userService.registerUser)
+	r.GET("/users/loginUser", userService.loginUser)
+	r.PUT("/users/updateUser", middleware.IsAuthorized(), userService.updateUser)
 }

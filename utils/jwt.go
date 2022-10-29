@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"time"
 
 	jwt "github.com/golang-jwt/jwt/v4"
@@ -26,4 +27,18 @@ func GenerateJWT(email, username string) (string, error) {
 		return "", err
 	}
 	return tokenString, nil
+}
+
+func IsTokenValid(token string) bool {
+	_, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(JWT_SECRET_KEY), nil
+	})
+
+	if err != nil {
+		return false
+	}
+	return true
 }

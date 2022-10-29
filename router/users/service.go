@@ -76,3 +76,9 @@ func (u *UserService) loginUser(ctx *gin.Context) {
 		Token string
 	}{user, jwtToken})
 }
+
+func (u *UserService) updateUser(ctx *gin.Context) {
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "You hit a put end point",
+	})
+}
