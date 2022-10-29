@@ -15,6 +15,7 @@ func init() {
 }
 
 func main() {
-	database.InitializeDb()
-	router.InitializeRouter()
+	db := database.InitializeDb()
+	r := router.InitializeRouter(db)
+	r.Run(":8080")
 }
