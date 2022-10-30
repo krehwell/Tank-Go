@@ -76,16 +76,9 @@ func (u *UserService) updateUser(ctx *gin.Context) {
 		return
 	}
 
-	oldUserData, isFound := u.repository.getUserById(user.Id)
-	if !isFound {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "User with given Id not found"})
-		return
-	}
-
-	jwtUserNoAssertion, _ := ctx.Get(utils.JWT_USER_DATA_KEY)
-	jwtUser := jwtUserNoAssertion.(utils.JWTUser)
-	if oldUserData.Email != jwtUser.Email || oldUserData.Username != jwtUser.Username {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Not authorized to update the user"})
+	oldUserData, jwtValidUserError := u.IsUserIdEqualJwtUser(ctx, user.Id)
+	if jwtValidUserError != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": jwtValidUserError.Error()})
 		return
 	}
 
@@ -113,16 +106,9 @@ func (u *UserService) deleteUser(ctx *gin.Context) {
 		return
 	}
 
-	userCorresId, isFound := u.repository.getUserById(idToBeDeleted.Id)
-	if !isFound {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "User with given Id not found"})
-		return
-	}
-
-	jwtUserNoAssertion, _ := ctx.Get(utils.JWT_USER_DATA_KEY)
-	jwtUser := jwtUserNoAssertion.(utils.JWTUser)
-	if userCorresId.Email != jwtUser.Email || userCorresId.Username != jwtUser.Username {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Not authorized to delete the user"})
+	userCorresId, jwtValidUserError := u.IsUserIdEqualJwtUser(ctx, idToBeDeleted.Id)
+	if jwtValidUserError != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": jwtValidUserError.Error()})
 		return
 	}
 
