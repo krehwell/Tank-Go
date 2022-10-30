@@ -76,7 +76,7 @@ func (u *UserService) updateUser(ctx *gin.Context) {
 		return
 	}
 
-	oldUserData, jwtValidUserError := u.IsUserIdEqualJwtUser(ctx, user.Id)
+	oldUserData, jwtValidUserError := u.isUserIdEqualJwtUser(ctx, user.Id)
 	if jwtValidUserError != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": jwtValidUserError.Error()})
 		return
@@ -106,7 +106,7 @@ func (u *UserService) deleteUser(ctx *gin.Context) {
 		return
 	}
 
-	userCorresId, jwtValidUserError := u.IsUserIdEqualJwtUser(ctx, idToBeDeleted.Id)
+	userCorresId, jwtValidUserError := u.isUserIdEqualJwtUser(ctx, idToBeDeleted.Id)
 	if jwtValidUserError != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": jwtValidUserError.Error()})
 		return

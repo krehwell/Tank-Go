@@ -22,7 +22,7 @@ func processUserAndGenerateToken(cb func() (model.User, error)) (model.User, str
 	return user, jwtToken, nil
 }
 
-func (u *UserService) IsUserIdEqualJwtUser(ctx *gin.Context, userId string) (model.User, error) {
+func (u *UserService) isUserIdEqualJwtUser(ctx *gin.Context, userId string) (model.User, error) {
 	userCorresId, isFound := u.repository.getUserById(userId)
 	if !isFound {
 		return model.User{}, errors.New("User with given Id not found")
