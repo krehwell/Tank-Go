@@ -43,7 +43,7 @@ func (u *UserService) loginUser(ctx *gin.Context) {
 	}
 
 	user, jwtToken, err := processUserAndGenerateToken(func() (model.User, error) {
-		foundUser, isFound := u.repository.getUserByUsername(authData.Email)
+		foundUser, isFound := u.repository.getUserByEmail(authData.Email)
 
 		isAllowToLogin := utils.ComparePasswords(foundUser.Password, []byte(authData.Password))
 		if !isAllowToLogin {
@@ -112,7 +112,7 @@ func (u *UserService) deleteUser(ctx *gin.Context) {
 		return
 	}
 
-	deletedUser, deleteUserErr := u.repository.updateUserData(userCorresId, model.User{IsDeleted: 1})
+	deletedUser, deleteUserErr := u.repository.updateUserData(userCorresId, model.User{IsDeleted: true})
 	if deleteUserErr != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Failed to delete user"})
 		return

@@ -13,16 +13,16 @@ type UserRepository struct {
 
 func (ur *UserRepository) getUserById(id string) (model.User, bool) {
 	u := model.User{Id: id}
-	if err := ur.database.DB.First(&u, "id = ?", id).Error; err != nil {
+	if err := ur.database.DB.First(&u, "id = ? AND is_deleted = ?", id, false).Error; err != nil {
 		return u, false
 	}
 
 	return u, true
 }
 
-func (ur *UserRepository) getUserByUsername(email string) (model.User, bool) {
+func (ur *UserRepository) getUserByEmail(email string) (model.User, bool) {
 	u := model.User{Email: email}
-	if err := ur.database.DB.First(&u, "email = ?", email).Error; err != nil {
+	if err := ur.database.DB.First(&u, "email = ? AND is_deleted = ?", email, false).Error; err != nil {
 		return u, false
 	}
 
