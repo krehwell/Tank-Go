@@ -37,6 +37,7 @@ func IsAuthorized() gin.HandlerFunc {
 		jwtUserData, jwtUserDataErr := utils.ExtractTokenUserIdentity(headerToken)
 		if jwtUserDataErr != nil {
 			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": false, "message": jwtUserDataErr.Error()})
+			return
 		}
 
 		ctx.Set(utils.JWT_USER_DATA_KEY, jwtUserData)

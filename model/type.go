@@ -26,3 +26,4 @@ type SocialMedia struct {
 	SocialMediaUrl string `gorm:"not null" valid:"-"`
 	UserId         string `valid:"-"`
 }
+
