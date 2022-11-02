@@ -17,3 +17,13 @@ func (pr *PhotoRepository) createPhoto(newPhotoData model.Photo) (model.Photo, e
 
 	return newPhotoData, nil
 }
+
+func (pr *PhotoRepository) getPhotosByUserId(userId string) ([]model.Photo, error) {
+	photosBuffer := []model.Photo{}
+
+	if err := pr.database.DB.Where("user_id = ?", userId).Find(&photosBuffer).Error; err != nil {
+		return []model.Photo{}, err
+	}
+
+	return photosBuffer, nil
+}

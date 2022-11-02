@@ -37,5 +37,18 @@ func (p *PhotoService) uploadPhoto(ctx *gin.Context) {
 }
 
 func (p *PhotoService) getAllAssociateUserPhotos(ctx *gin.Context) {
+	jwtUser, ok := middleware.GetJWTUser(ctx)
+	if !ok {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "No user in found in JWT"})
+		return
+	}
 
+	photos, getAllPhotosErr := p.repository.getPhotosByUserId(jwtUser.Id)
+
+	if getAllPhotosErr != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": getAllPhotosErr.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, photos)
 }
