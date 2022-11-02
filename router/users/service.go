@@ -15,9 +15,8 @@ type UserService struct {
 
 func (u *UserService) registerUser(ctx *gin.Context) {
 	newUser := model.User{}
-	bindErr := ctx.ShouldBindJSON(&newUser)
 
-	if bindErr != nil {
+	if bindErr := ctx.ShouldBindJSON(&newUser); bindErr != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": bindErr.Error()})
 		return
 	}
@@ -70,8 +69,8 @@ func (u *UserService) loginUser(ctx *gin.Context) {
 
 func (u *UserService) updateUser(ctx *gin.Context) {
 	user := model.User{}
-	bindErr := ctx.ShouldBindJSON(&user)
-	if bindErr != nil {
+
+	if bindErr := ctx.ShouldBindJSON(&user); bindErr != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Failed to bind with JSON, check the body"})
 		return
 	}
@@ -100,8 +99,7 @@ func (u *UserService) updateUser(ctx *gin.Context) {
 func (u *UserService) deleteUser(ctx *gin.Context) {
 	idToBeDeleted := struct{ Id string }{}
 
-	bindErr := ctx.ShouldBindJSON(&idToBeDeleted)
-	if bindErr != nil {
+	if bindErr := ctx.ShouldBindJSON(&idToBeDeleted); bindErr != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Failed to bind with JSON, check the body"})
 		return
 	}

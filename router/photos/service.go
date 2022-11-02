@@ -14,8 +14,7 @@ type PhotoService struct {
 
 func (p *PhotoService) uploadPhoto(ctx *gin.Context) {
 	photoData := model.Photo{}
-	bindErr := ctx.ShouldBindJSON(&photoData)
-	if bindErr != nil {
+	if bindErr := ctx.ShouldBindJSON(&photoData); bindErr != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": bindErr.Error()})
 		return
 	}
