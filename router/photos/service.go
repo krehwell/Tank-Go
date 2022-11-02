@@ -33,5 +33,5 @@ func (p *PhotoService) uploadPhoto(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, createdPhoto)
+	ctx.JSON(http.StatusCreated, createdPhoto)
 }
