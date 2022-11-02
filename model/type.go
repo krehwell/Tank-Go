@@ -17,7 +17,3 @@ type SocialMedia struct {
 	SocialMediaUrl string `gorm:"not null" valid:"-"`
 	UserId         string `valid:"-"`
 }
-
-func (SocialMedia) TableName() string {
-	return "social_medias"
-}
