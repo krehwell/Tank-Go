@@ -7,7 +7,7 @@ import (
 func HashAndSalt(pwd []byte) string {
 	hash, err := bcrypt.GenerateFromPassword(pwd, bcrypt.MinCost)
 	if err != nil {
-		return ""
+		//
 	}
 
 	return string(hash)
