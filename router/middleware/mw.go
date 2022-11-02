@@ -14,13 +14,13 @@ func IsAuthorized() gin.HandlerFunc {
 		isTokenValid := utils.IsTokenValid(headerToken)
 
 		if !isTokenValid {
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": false, "message": "Unauthorized"})
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Unauthorized"})
 			return
 		}
 
 		jwtUserData, jwtUserDataErr := utils.ExtractTokenUserIdentity(headerToken)
 		if jwtUserDataErr != nil {
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": false, "message": jwtUserDataErr.Error()})
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": jwtUserDataErr.Error()})
 			return
 		}
 
