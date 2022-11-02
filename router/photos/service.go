@@ -35,3 +35,7 @@ func (p *PhotoService) uploadPhoto(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusCreated, createdPhoto)
 }
+
+func (p *PhotoService) getAllAssociateUserPhotos(ctx *gin.Context) {
+
+}
