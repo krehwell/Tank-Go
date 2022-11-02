@@ -18,3 +18,6 @@ type SocialMedia struct {
 	UserId         string `valid:"-"`
 }
 
+func (SocialMedia) TableName() string {
+	return "social_medias"
+}
