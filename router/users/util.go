@@ -5,6 +5,8 @@ import (
 	"final-project/model"
 	"final-project/utils"
 
+	"final-project/router/middleware"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -28,10 +30,9 @@ func (u *UserService) isUserIdEqualJwtUser(ctx *gin.Context, userId string) (mod
 		return model.User{}, errors.New("User with given Id not found")
 	}
 
-	jwtUserNoAssertion, _ := ctx.Get(utils.JWT_USER_DATA_KEY)
-	jwtUser := jwtUserNoAssertion.(utils.JWTUser)
-	if userCorresId.Email != jwtUser.Email || userCorresId.Username != jwtUser.Username {
-		return model.User{}, errors.New("Not authorized to delete the user")
+	jwtUser, ok := middleware.GetJWTUser(ctx)
+	if userCorresId.Email != jwtUser.Email || userCorresId.Username != jwtUser.Username  || !ok {
+		return model.User{}, errors.New("User in JWT missmatch")
 	}
 
 	return userCorresId, nil

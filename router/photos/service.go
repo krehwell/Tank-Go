@@ -20,5 +20,7 @@ func (p *PhotoService) uploadPhoto(ctx *gin.Context) {
 	bindErr := ctx.ShouldBindJSON(&photoData)
 	if bindErr != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": bindErr.Error()})
+		return
 	}
+
 }

@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"final-project/utils"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -21,3 +22,13 @@ func extractTokenFromHeader(c *gin.Context) string {
 	return bearerTokenStr[1]
 }
 
+func GetJWTUser(ctx *gin.Context) (utils.JWTUser, bool) {
+	jwtUserPlain, isInContext := ctx.Get(utils.JWT_USER_DATA_KEY)
+	if !isInContext {
+		return utils.JWTUser{}, false
+	}
+
+	jwtUser, ok := jwtUserPlain.(utils.JWTUser)
+
+	return jwtUser, ok
+}
