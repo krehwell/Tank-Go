@@ -9,16 +9,16 @@ import (
 )
 
 type User struct {
-	gorm.Model  `valid:"-"`
-	Id          string        `gorm:"primaryKey" valid:"uuid"`
-	Username    string        `gorm:"unique;not null" valid:"stringlength(3|20)"`
-	Email       string        `gorm:"unique;not null" valid:"email"`
-	Password    string        `gorm:"not null" valid:"stringlength(6|200)"`
-	Age         int           `gorm:"not null" valid:"range(8|200)"`
-	IsDeleted   bool          `gorm:"type:boolean;default:false" valid:"-"`
-	Photo       []Photo       `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" valid:"-"`
-	Comment     []Comment     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" valid:"-"`
-	SocialMedia []SocialMedia `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" valid:"-"`
+	gorm.Model   `valid:"-"`
+	Id           string         `gorm:"primaryKey" valid:"uuid"`
+	Username     string         `gorm:"unique;not null" valid:"stringlength(3|20)"`
+	Email        string         `gorm:"unique;not null" valid:"email"`
+	Password     string         `gorm:"not null" valid:"stringlength(6|200)"`
+	Age          int            `gorm:"not null" valid:"range(8|200)"`
+	IsDeleted    bool           `gorm:"type:boolean;default:false" valid:"-"`
+	Photos       []*Photo       `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" valid:"-"`
+	Comments     []*Comment     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" valid:"-"`
+	SocialMedias []*SocialMedia `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" valid:"-"`
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB) (err error) {

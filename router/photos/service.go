@@ -3,6 +3,7 @@ package photos
 import (
 	"final-project/model"
 	"final-project/router/middleware"
+	"final-project/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -50,5 +51,15 @@ func (p *PhotoService) getAllAssociateUserPhotos(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, photos)
+	type PhotoResponse struct {
+		model.Photo
+		User utils.JWTUser
+	}
+
+	result := []PhotoResponse{}
+	for i := range photos {
+		result = append(result, PhotoResponse{photos[i], jwtUser})
+	}
+
+	ctx.JSON(http.StatusOK, result)
 }
