@@ -14,7 +14,7 @@ func processUserAndGenerateToken(cb func() (model.User, error)) (model.User, str
 		return model.User{}, "", processUserErr
 	}
 
-	jwtToken, jwtErr := utils.GenerateJWT(user.Email, user.Username)
+	jwtToken, jwtErr := utils.GenerateJWT(user.Email, user.Username, user.Id)
 	if jwtErr != nil {
 		return model.User{}, "", jwtErr
 	}

@@ -16,6 +16,7 @@ const (
 type JWTUser struct {
 	Username string
 	Email    string
+	Id       string
 }
 
 func parseToken(token *jwt.Token) (any, error) {
@@ -36,14 +37,15 @@ func ExtractTokenUserIdentity(tokenString string) (JWTUser, error) {
 	if ok && token.Valid {
 		username := claims["username"].(string)
 		email := claims["email"].(string)
+		id := claims["id"].(string)
 
-		return JWTUser{Username: username, Email: email}, nil
+		return JWTUser{Username: username, Email: email, Id: id}, nil
 	}
 
 	return JWTUser{}, errors.New("Token is invalid")
 }
 
-func GenerateJWT(email, username string) (string, error) {
+func GenerateJWT(email, username, id string) (string, error) {
 	var signingKey = []byte(JWT_SECRET_KEY)
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
@@ -51,6 +53,7 @@ func GenerateJWT(email, username string) (string, error) {
 	claims["authorized"] = true
 	claims["email"] = email
 	claims["username"] = username
+	claims["id"] = id
 	claims["exp"] = time.Now().Add(time.Minute * 30).Unix()
 
 	tokenString, parseErr := token.SignedString(signingKey)
