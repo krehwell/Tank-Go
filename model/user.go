@@ -16,7 +16,7 @@ type User struct {
 	Password    string      `gorm:"not null" valid:"stringlength(6|200)"`
 	Age         int         `gorm:"not null" valid:"range(8|200)"`
 	IsDeleted   bool        `gorm:"type:boolean;default:false" valid:"-"`
-	Photo       Photo       `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" valid:"-"`
+	Photo       []Photo       `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" valid:"-"`
 	Comment     Comment     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" valid:"-"`
 	SocialMedia SocialMedia `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" valid:"-"`
 }
