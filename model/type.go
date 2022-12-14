@@ -6,6 +6,7 @@ import (
 
 type Comment struct {
 	gorm.Model `valid:"-"`
+	Id         string `gorm:"primaryKey" valid:"uuid"`
 	UserId     string `valid:"uuid"`
 	PhotoId    string `valid:"-"`
 	Message    string `gorm:"not null" valid:"-"`

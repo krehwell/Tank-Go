@@ -8,12 +8,13 @@ import (
 
 type Photo struct {
 	gorm.Model `valid:"-"`
-	Id         string `gorm:"primaryKey" valid:"uuid"`
-	UserId     string `valid:"uuid"`
-	Title      string `gorm:"not null" valid:"-"`
-	Caption    string `valid:"-"`
-	PhotoUrl   string `gorm:"not null" valid:"url"`
-	IsDeleted  bool   `gorm:"type:boolean;default:false" valid:"-"`
+	Id         string     `gorm:"primaryKey" valid:"uuid"`
+	UserId     string     `valid:"uuid"`
+	Title      string     `gorm:"not null" valid:"-"`
+	Caption    string     `valid:"-"`
+	PhotoUrl   string     `gorm:"not null" valid:"url"`
+	IsDeleted  bool       `gorm:"type:boolean;default:false" valid:"-"`
+	Comments   []*Comment `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" valid:"-"`
 }
 
 type PhotoBody struct {
