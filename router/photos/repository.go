@@ -3,10 +3,22 @@ package photos
 import (
 	"final-project/database"
 	"final-project/model"
+
+	"gorm.io/gorm/clause"
 )
 
 type PhotoRepository struct {
 	database database.Database
+}
+
+func (pr *PhotoRepository) getPhotoById(id string) (model.Photo, error) {
+	photo := model.Photo{}
+
+	if err := pr.database.DB.First(&photo, "id = ? AND is_deleted = ?", id, false).Error; err != nil {
+		return model.Photo{}, err
+	}
+
+	return photo, nil
 }
 
 func (pr *PhotoRepository) createPhoto(newPhotoData model.Photo) (model.Photo, error) {
@@ -26,4 +38,17 @@ func (pr *PhotoRepository) getPhotosByUserId(userId string) ([]model.Photo, erro
 	}
 
 	return photosBuffer, nil
+}
+
+func (pr *PhotoRepository) updatePhotoData(oldPhotoData, newPhotoData model.Photo) (model.Photo, error) {
+	updateUserErr := pr.database.DB.Model(&oldPhotoData).
+		Clauses(clause.Returning{}).
+		Where("Id = ?", oldPhotoData.Id).
+		Updates(&newPhotoData).Error
+
+	if updateUserErr != nil {
+		return model.Photo{}, updateUserErr
+	}
+
+	return oldPhotoData, nil
 }

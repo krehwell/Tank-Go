@@ -13,6 +13,14 @@ type Photo struct {
 	Title      string `gorm:"not null" valid:"-"`
 	Caption    string `valid:"-"`
 	PhotoUrl   string `gorm:"not null" valid:"url"`
+	IsDeleted  bool   `gorm:"type:boolean;default:false" valid:"-"`
+}
+
+type PhotoBody struct {
+	Id       string
+	Title    string
+	Caption  string
+	PhotoUrl string
 }
 
 func (p *Photo) BeforeCreate(tx *gorm.DB) (err error) {
