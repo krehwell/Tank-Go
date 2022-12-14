@@ -65,17 +65,22 @@ func (p *PhotoService) getAllAssociateUserPhotos(ctx *gin.Context) {
 }
 
 func (p *PhotoService) updatePhoto(ctx *gin.Context) {
-	photo := model.Photo{}
-	if bindErr := ctx.ShouldBindJSON(&photo); bindErr != nil {
+	photoBody := model.PhotoBody{}
+	if bindErr := ctx.ShouldBindJSON(&photoBody); bindErr != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": bindErr.Error()})
+		return
 	}
 
-	oldPhotoData, getPhotoErr := p.repository.getPhotoById(photo.Id)
+	oldPhotoData, getPhotoErr := p.repository.getPhotoById(photoBody.Id)
 	if getPhotoErr != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": getPhotoErr.Error()})
+		return
 	}
 
-	updatedPhoto, updatePhotoErr := p.repository.updatePhotoData(oldPhotoData, photo)
+	newPhotoData := oldPhotoData
+	utils.MergeInPlaceStructWithPartialStruct(&newPhotoData, photoBody)
+
+	updatedPhoto, updatePhotoErr := p.repository.updatePhotoData(oldPhotoData, newPhotoData)
 	if updatePhotoErr != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": updatePhotoErr.Error()})
 	}
