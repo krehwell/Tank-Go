@@ -14,5 +14,5 @@ func Controller(r *gin.RouterGroup, db database.Database) {
 	r.POST("/photos/upload", photoService.uploadPhoto)
 	r.GET("/photos/getAll", photoService.getAllAssociateUserPhotos)
 	r.PUT("/photos/update", photoService.updatePhoto)
-	// r.DELETE("/users/deleteUser", middleware.IsAuthorized(), userService.deleteUser)
+	r.DELETE("/photos/delete", middleware.IsAuthorized(), photoService.deletePhoto)
 }

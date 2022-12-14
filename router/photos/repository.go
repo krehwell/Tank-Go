@@ -33,7 +33,7 @@ func (pr *PhotoRepository) createPhoto(newPhotoData model.Photo) (model.Photo, e
 func (pr *PhotoRepository) getPhotosByUserId(userId string) ([]model.Photo, error) {
 	photosBuffer := []model.Photo{}
 
-	if err := pr.database.DB.Where("user_id = ?", userId).Find(&photosBuffer).Error; err != nil {
+	if err := pr.database.DB.Where("user_id = ? AND is_deleted = ?", userId, false).Find(&photosBuffer).Error; err != nil {
 		return []model.Photo{}, err
 	}
 

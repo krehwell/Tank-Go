@@ -87,3 +87,38 @@ func (p *PhotoService) updatePhoto(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, updatedPhoto)
 }
+
+func (p *PhotoService) deletePhoto(ctx *gin.Context) {
+	idToBeDeleted := struct{ Id string }{}
+
+	if bindErr := ctx.ShouldBindJSON(&idToBeDeleted); bindErr != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": bindErr.Error()})
+		return
+	}
+
+	photo, getPhotoErr := p.repository.getPhotoById(idToBeDeleted.Id)
+	if getPhotoErr != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": getPhotoErr.Error()})
+		return
+	}
+
+	currUser, jwtUserErr := middleware.GetJWTUser(ctx)
+	if !jwtUserErr {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "User unauthorized"})
+		return
+	}
+
+	if currUser.Id != photo.UserId {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "User not authorized to perform the operation"})
+		return
+	}
+
+
+	deletedPhoto, deletePhotoErr := p.repository.updatePhotoData(photo, model.Photo{IsDeleted: true})
+	if deletePhotoErr != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Failed to delete photo"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, deletedPhoto)
+}
