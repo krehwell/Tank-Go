@@ -1,5 +1,9 @@
 {
   "cSpell.words": [
-    "bcrypt"
+    "asaskevich",
+    "bcrypt",
+    "gonic",
+    "govalidator",
+    "kubun"
   ]
 }
